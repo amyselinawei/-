@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEXpress | 信用卡優惠</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.promo-hero {
+  background: linear-gradient(135deg, var(--orange) 0%, #ff9040 100%);
+  border-radius: var(--radius); padding: 22px; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+.promo-hero::before { content: ''; position: absolute; right: -20px; bottom: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+.promo-hero h2 { color: #fff; font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+.promo-hero p { color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.6; }
+.promo-hero .badge { display: inline-block; background: rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; margin-top: 12px; }
+
+.card-promo {
+  background: #fff; border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); margin-bottom: 12px; cursor: pointer;
+  border: 2px solid transparent; transition: border-color 0.2s;
+}
+.card-promo:hover { border-color: var(--orange); }
+.cp-header { padding: 16px 18px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); }
+.card-icon { width: 52px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; flex-shrink: 0; }
+.ci-visa { background: #1a1a6b; color: #fff; }
+.ci-master { background: linear-gradient(90deg, #eb001b 40%, #f79e1b 60%); color: #fff; font-size: 18px; }
+.ci-jcb { background: #003087; color: #fff; }
+.ci-ucard { background: #e41e26; color: #fff; font-size: 11px; }
+.cp-info { flex: 1; }
+.cp-info h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.cp-info small { font-size: 12px; color: var(--text3); }
+.cp-discount { font-size: 20px; font-weight: 900; color: var(--orange); white-space: nowrap; }
+.cp-body { padding: 14px 18px; }
+.cp-tag { display: inline-block; background: var(--orange-light); color: var(--orange); font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 6px; margin: 3px 3px 3px 0; }
+.cp-expire { font-size: 11px; color: var(--text3); margin-top: 8px; }
+
+.bind-btn { display: block; width: 100%; background: var(--dark); color: #fff; border: none; border-radius: var(--radius-sm); padding: 14px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; text-align: center; margin-top: 4px; text-decoration: none; transition: background 0.15s; }
+.bind-btn:hover { background: var(--dark2); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="island"></div>
+  <div class="topbar">
+    <div class="topbar-main">
+      <div class="brand"><span>T</span>EXpress</div>
+    </div>
+    <nav class="top-tabs">
+      <a href="booking.html">一般訂票</a>
+      <a class="active" href="credit-card.html">信用卡優惠</a>
+      <a href="free-seat.html">今日自由座</a>
+    </nav>
+  </div>
+
+  <div class="page-content">
+    <div class="promo-hero">
+      <h2>信用卡專屬優惠</h2>
+      <p>綁定指定信用卡，享受高鐵訂票折扣回饋，最高享 9 折優惠。</p>
+      <div class="badge">💳 最高省 NT$ 79 / 次</div>
+    </div>
+
+    <div class="card-promo" onclick="alert('綁定 Visa 信用卡')">
+      <div class="cp-header">
+        <div class="card-icon ci-visa">VISA</div>
+        <div class="cp-info">
+          <h4>Visa 信用卡</h4>
+          <small>所有 Visa 卡別適用</small>
+        </div>
+        <div class="cp-discount">9折</div>
+      </div>
+      <div class="cp-body">
+        <span class="cp-tag">一般訂票</span>
+        <span class="cp-tag">去回票</span>
+        <span class="cp-tag">每月限3次</span>
+        <div class="cp-expire">優惠期限：2026/12/31</div>
+      </div>
+    </div>
+
+    <div class="card-promo" onclick="alert('綁定 Mastercard 信用卡')">
+      <div class="cp-header">
+        <div class="card-icon ci-master">⬤</div>
+        <div class="cp-info">
+          <h4>Mastercard 信用卡</h4>
+          <small>含白金卡、鈦金卡</small>
+        </div>
+        <div class="cp-discount">95折</div>
+      </div>
+      <div class="cp-body">
+        <span class="cp-tag">單程票</span>
+        <span class="cp-tag">標準車廂</span>
+        <span class="cp-tag">無次數限制</span>
+        <div class="cp-expire">優惠期限：2026/06/30</div>
+      </div>
+    </div>
+
+    <div class="card-promo" onclick="alert('綁定 JCB 信用卡')">
+      <div class="cp-header">
+        <div class="card-icon ci-jcb">JCB</div>
+        <div class="cp-info">
+          <h4>JCB 信用卡</h4>
+          <small>日本 JCB 卡持卡人</small>
+        </div>
+        <div class="cp-discount">88折</div>
+      </div>
+      <div class="cp-body">
+        <span class="cp-tag">週末限定</span>
+        <span class="cp-tag">每月限2次</span>
+        <div class="cp-expire">優惠期限：2026/03/31</div>
+      </div>
+    </div>
+
+    <div class="card-promo" onclick="alert('綁定聯合信用卡')">
+      <div class="cp-header">
+        <div class="card-icon ci-ucard">聯卡</div>
+        <div class="cp-info">
+          <h4>聯合信用卡</h4>
+          <small>國內銀行聯名卡</small>
+        </div>
+        <div class="cp-discount">9折</div>
+      </div>
+      <div class="cp-body">
+        <span class="cp-tag">平日優惠</span>
+        <span class="cp-tag">全線適用</span>
+        <span class="cp-tag">每月限4次</span>
+        <div class="cp-expire">優惠期限：2026/12/31</div>
+      </div>
+    </div>
+
+    <a class="bind-btn" href="#">+ 綁定信用卡</a>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="my-ticket.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>我的車票</a>
+    <a href="booking.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>訂票</a>
+    <a href="payment.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>付款/取票</a>
+    <a href="free-seat.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 10H7M21 6H3M21 14H3M21 18H7"/></svg>載入定位</a>
+    <a href="other.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>其他</a>
+  </nav>
+</div>
+</body>
+</html>

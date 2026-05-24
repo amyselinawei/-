@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEXpress | 付款確認</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.train-visual {
+  background: var(--dark); border-radius: var(--radius); padding: 20px; margin-bottom: 12px;
+  position: relative; overflow: hidden;
+}
+.train-visual::before {
+  content: ''; position: absolute; right: -30px; top: -30px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(255,107,0,0.08);
+}
+.tv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.tv-no { background: rgba(255,107,0,0.2); color: #FF8C33; font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+.tv-date { color: #888; font-size: 12px; }
+.tv-route { display: flex; align-items: center; gap: 0; }
+.tv-station { flex: 1; }
+.tv-time { font-size: 32px; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.tv-city { font-size: 13px; color: #888; margin-top: 3px; }
+.tv-right { text-align: right; }
+.tv-middle { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 10px; }
+.tv-line { width: 100%; height: 1.5px; background: rgba(255,107,0,0.4); position: relative; }
+.tv-line::after { content: '›'; position: absolute; right: -4px; top: -12px; color: var(--orange); font-size: 20px; }
+.tv-dur { font-size: 11px; color: #666; }
+.tv-tags { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.tv-tag { background: rgba(255,255,255,0.07); color: #aaa; font-size: 12px; padding: 4px 10px; border-radius: 6px; }
+.tv-tag.hl { background: rgba(255,107,0,0.15); color: #FF8C33; }
+
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.summary-row:last-child { border-bottom: none; }
+.summary-row span { color: var(--text3); font-size: 14px; }
+.summary-row strong { color: var(--text); font-size: 14px; font-weight: 600; }
+.total-row { border-top: 2px solid var(--border) !important; border-bottom: none !important; padding-top: 14px; }
+.total-row span { color: var(--text); font-size: 15px; font-weight: 700; }
+.total-row strong { color: var(--orange); font-size: 22px; font-weight: 900; }
+
+.pay-option {
+  display: flex; align-items: center; gap: 12px; padding: 14px;
+  border: 2px solid var(--border); border-radius: 12px; cursor: pointer; margin-bottom: 9px;
+  transition: all 0.2s;
+}
+.pay-option.selected { border-color: var(--orange); background: var(--orange-light); }
+.pay-icon-box { width: 42px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.pi-visa { background: #1a1a6b; color: #fff; }
+.pi-apple { background: #000; color: #fff; font-size: 16px; }
+.pi-line { background: #06C755; color: #fff; font-size: 13px; }
+.pi-jko { background: #E53935; color: #fff; font-size: 11px; }
+.pay-name { flex: 1; }
+.pay-name strong { display: block; font-size: 14px; color: var(--text); font-weight: 600; }
+.pay-name small { font-size: 11px; color: var(--text3); }
+.radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.radio.on { border-color: var(--orange); background: var(--orange); }
+.radio.on::after { content: ''; width: 8px; height: 8px; background: #fff; border-radius: 50%; }
+
+.notice { background: #fff8e1; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 8px; align-items: flex-start; }
+.notice-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.notice p { font-size: 12px; color: #6d4c00; line-height: 1.6; }
+
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; }
+.loading-overlay.show { display: flex; }
+.loading-box { background: #fff; border-radius: 20px; padding: 32px; text-align: center; width: 240px; }
+.spinner { width: 44px; height: 44px; border: 3px solid #f0f0f0; border-top-color: var(--orange); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-box p { color: var(--text2); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="island"></div>
+  <div class="topbar">
+    <div class="topbar-main">
+      <a class="topbar-back" href="train-list.html">‹</a>
+      <div class="topbar-title">付款確認</div>
+      <div class="brand" style="margin-left:auto"><span>T</span>EXpress</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <!-- Train visual -->
+    <div class="train-visual">
+      <div class="tv-top">
+        <div class="tv-no">車次 0834</div>
+        <div class="tv-date">2026/03/09（一）</div>
+      </div>
+      <div class="tv-route">
+        <div class="tv-station">
+          <div class="tv-time">14:43</div>
+          <div class="tv-city">高雄</div>
+        </div>
+        <div class="tv-middle">
+          <div class="tv-line"></div>
+          <div class="tv-dur">49 分鐘</div>
+        </div>
+        <div class="tv-station tv-right">
+          <div class="tv-time">15:32</div>
+          <div class="tv-city">台中</div>
+        </div>
+      </div>
+      <div class="tv-tags">
+        <div class="tv-tag hl">標準車廂</div>
+        <div class="tv-tag">對號座</div>
+        <div class="tv-tag">全票 ×1</div>
+        <div class="tv-tag">系統配位</div>
+      </div>
+    </div>
+
+    <!-- Order summary -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">訂單摘要</div>
+      <div class="summary-row"><span>路線</span><strong>高雄 → 台中</strong></div>
+      <div class="summary-row"><span>車次</span><strong>0834 次</strong></div>
+      <div class="summary-row"><span>出發時間</span><strong>2026/03/09 14:43</strong></div>
+      <div class="summary-row"><span>乘客</span><strong>王小明</strong></div>
+      <div class="summary-row"><span>票種</span><strong>全票 ×1</strong></div>
+      <div class="summary-row"><span>座位</span><strong>系統配位</strong></div>
+      <div class="summary-row total-row"><span>總金額</span><strong>NT$ 790</strong></div>
+    </div>
+
+    <!-- Notice -->
+    <div class="notice">
+      <div class="notice-icon">💡</div>
+      <p>付款後可於「我的車票」頁面查看車票，並可使用 QR Code 進站。退票請於出發前 30 分鐘辦理。</p>
+    </div>
+
+    <!-- Payment methods -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">付款方式</div>
+      <div class="pay-option selected" onclick="selectPay(this)">
+        <div class="pay-icon-box pi-visa">VISA</div>
+        <div class="pay-name"><strong>信用卡</strong><small>Visa / Mastercard / JCB</small></div>
+        <div class="radio on"></div>
+      </div>
+      <div class="pay-option" onclick="selectPay(this)">
+        <div class="pay-icon-box pi-apple">&#xF8FF;</div>
+        <div class="pay-name"><strong>Apple Pay</strong><small>Touch ID / Face ID</small></div>
+        <div class="radio"></div>
+      </div>
+      <div class="pay-option" onclick="selectPay(this)">
+        <div class="pay-icon-box pi-line">LINE</div>
+        <div class="pay-name"><strong>LINE Pay</strong><small>LINE Points 可折抵</small></div>
+        <div class="radio"></div>
+      </div>
+      <div class="pay-option" onclick="selectPay(this)">
+        <div class="pay-icon-box pi-jko">街口</div>
+        <div class="pay-name"><strong>街口支付</strong><small>街口幣可折抵</small></div>
+        <div class="radio"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="font-size:17px;margin-bottom:10px" onclick="confirmPay()">確認付款 NT$ 790</button>
+    <a class="btn btn-ghost" href="train-list.html">← 返回修改</a>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="my-ticket.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>我的車票</a>
+    <a href="booking.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>訂票</a>
+    <a href="payment.html" class="nav-item active"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>付款/取票</a>
+    <a href="free-seat.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 10H7M21 6H3M21 14H3M21 18H7"/></svg>載入定位</a>
+    <a href="other.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>其他</a>
+  </nav>
+</div>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <p>付款處理中...</p>
+  </div>
+</div>
+
+<script>
+function selectPay(el){
+  document.querySelectorAll('.pay-option').forEach(o => {
+    o.classList.remove('selected');
+    const r = o.querySelector('.radio');
+    r.classList.remove('on'); r.innerHTML = '';
+  });
+  el.classList.add('selected');
+  const r = el.querySelector('.radio');
+  r.classList.add('on');
+}
+
+function confirmPay(){
+  document.getElementById('loading').classList.add('show');
+  setTimeout(() => { window.location.href = 'my-ticket.html'; }, 2000);
+}
+</script>
+</body>
+</html>

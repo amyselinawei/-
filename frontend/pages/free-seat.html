@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEXpress | 今日自由座</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.section-hd h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+.section-hd span { font-size: 12px; color: var(--text3); }
+.updated { font-size: 11px; color: var(--text3); text-align: right; margin-bottom: 12px; }
+
+.wait-table { background: #fff; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 14px; }
+.wait-header { display: grid; grid-template-columns: 2fr 1fr 1fr; background: var(--dark); padding: 10px 16px; }
+.wait-header span { font-size: 11px; color: #888; font-weight: 600; text-align: center; }
+.wait-header span:first-child { text-align: left; }
+.wait-row { display: grid; grid-template-columns: 2fr 1fr 1fr; padding: 12px 16px; border-bottom: 1px solid var(--border); align-items: center; }
+.wait-row:last-child { border-bottom: none; }
+.station-pair { font-size: 13px; font-weight: 600; color: var(--text); }
+.station-pair span { display: block; font-size: 11px; color: var(--text3); font-weight: 400; margin-top: 2px; }
+.wait-time { text-align: center; }
+.wait-badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+.w-good { background: #e8f5ee; color: #00793b; }
+.w-mid { background: #fff4e0; color: #c07000; }
+.w-long { background: #fdecea; color: #c62828; }
+
+.direction-toggle { display: flex; gap: 0; background: #fff; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+.dir-btn { flex: 1; text-align: center; padding: 12px; font-size: 14px; color: var(--text3); cursor: pointer; transition: all 0.2s; font-family: inherit; border: none; background: transparent; font-weight: 500; }
+.dir-btn.active { background: var(--dark); color: #fff; font-weight: 700; }
+
+.info-banner { background: var(--orange-light); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; border-left: 3px solid var(--orange); }
+.info-banner h4 { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 6px; }
+.info-banner p { font-size: 12px; color: #7a3800; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="island"></div>
+  <div class="topbar">
+    <div class="topbar-main">
+      <div class="brand"><span>T</span>EXpress</div>
+      <div class="topbar-actions">
+        <button onclick="refreshData()"><svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>
+      </div>
+    </div>
+    <nav class="top-tabs">
+      <a href="booking.html">一般訂票</a>
+      <a href="credit-card.html">信用卡優惠</a>
+      <a class="active" href="free-seat.html">今日自由座</a>
+    </nav>
+  </div>
+
+  <div class="page-content">
+    <div class="updated" id="updated-time">更新時間：14:35</div>
+
+    <div class="direction-toggle">
+      <button class="dir-btn active" onclick="setDir('north',this)">↑ 北上</button>
+      <button class="dir-btn" onclick="setDir('south',this)">↓ 南下</button>
+    </div>
+
+    <div class="info-banner">
+      <h4>今日自由座說明</h4>
+      <p>自由座候車時間為預估值，實際情況依現場為準。建議提前 15 分鐘候車。</p>
+    </div>
+
+    <div class="section-hd">
+      <h3>各站候車時間</h3>
+      <span id="dir-label">北上方向</span>
+    </div>
+
+    <div class="wait-table">
+      <div class="wait-header">
+        <span>出發站</span>
+        <span>標準車廂</span>
+        <span>商務車廂</span>
+      </div>
+      <div id="wait-rows"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚆 今日班次狀況</div>
+      <div class="field-row" style="border-bottom:none;padding-bottom:0">
+        <div class="field-body">
+          <div class="field-label">全線運行</div>
+          <div class="field-val" style="color:var(--green)">正常 ・ 無誤點</div>
+        </div>
+        <span class="dot-green"></span>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="my-ticket.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>我的車票</a>
+    <a href="booking.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>訂票</a>
+    <a href="payment.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>付款/取票</a>
+    <a href="free-seat.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M21 10H7M21 6H3M21 14H3M21 18H7"/></svg>載入定位</a>
+    <a href="other.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>其他</a>
+  </nav>
+</div>
+<script>
+const DATA = {
+  north: [
+    {from:'高雄', to:'台南', std:'5分', stdC:'w-good', bus:'立即', busC:'w-good'},
+    {from:'台南', to:'嘉義', std:'10分', stdC:'w-mid', bus:'5分', busC:'w-good'},
+    {from:'嘉義', to:'雲林', std:'5分', stdC:'w-good', bus:'立即', busC:'w-good'},
+    {from:'雲林', to:'彰化', std:'20分', stdC:'w-long', bus:'10分', busC:'w-mid'},
+    {from:'彰化', to:'台中', std:'15分', stdC:'w-mid', bus:'5分', busC:'w-good'},
+    {from:'台中', to:'新竹', std:'10分', stdC:'w-mid', bus:'立即', busC:'w-good'},
+    {from:'新竹', to:'桃園', std:'5分', stdC:'w-good', bus:'立即', busC:'w-good'},
+    {from:'桃園', to:'板橋', std:'25分', stdC:'w-long', bus:'15分', busC:'w-long'},
+    {from:'板橋', to:'台北', std:'30分', stdC:'w-long', bus:'20分', busC:'w-long'},
+  ],
+  south: [
+    {from:'南港', to:'台北', std:'20分', stdC:'w-long', bus:'15分', busC:'w-long'},
+    {from:'台北', to:'板橋', std:'25分', stdC:'w-long', bus:'10分', busC:'w-mid'},
+    {from:'板橋', to:'桃園', std:'10分', stdC:'w-mid', bus:'5分', busC:'w-good'},
+    {from:'桃園', to:'新竹', std:'5分', stdC:'w-good', bus:'立即', busC:'w-good'},
+    {from:'新竹', to:'台中', std:'15分', stdC:'w-mid', bus:'5分', busC:'w-good'},
+    {from:'台中', to:'彰化', std:'5分', stdC:'w-good', bus:'立即', busC:'w-good'},
+    {from:'彰化', to:'嘉義', std:'10分', stdC:'w-mid', bus:'立即', busC:'w-good'},
+    {from:'嘉義', to:'台南', std:'5分', stdC:'w-good', bus:'立即', busC:'w-good'},
+    {from:'台南', to:'左營', std:'20分', stdC:'w-long', bus:'10分', busC:'w-mid'},
+  ]
+};
+let currentDir = 'north';
+
+function setDir(d, el){
+  currentDir = d;
+  document.querySelectorAll('.dir-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('dir-label').textContent = d==='north' ? '北上方向' : '南下方向';
+  renderTable();
+}
+
+function renderTable(){
+  const rows = DATA[currentDir];
+  document.getElementById('wait-rows').innerHTML = rows.map(r => `
+    <div class="wait-row">
+      <div class="station-pair">${r.from}<span>→ ${r.to}</span></div>
+      <div class="wait-time"><span class="wait-badge ${r.stdC}">${r.std}</span></div>
+      <div class="wait-time"><span class="wait-badge ${r.busC}">${r.bus}</span></div>
+    </div>`).join('');
+}
+
+function refreshData(){
+  const now = new Date();
+  document.getElementById('updated-time').textContent = `更新時間：${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  renderTable();
+}
+
+renderTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEXpress | 班次選擇</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.route-header {
+  background: var(--dark); border-radius: var(--radius); padding: 16px 18px;
+  margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
+}
+.rh-stations { display: flex; align-items: center; gap: 10px; }
+.rh-city { font-size: 22px; font-weight: 800; color: #fff; }
+.rh-arrow { color: var(--orange); font-size: 18px; }
+.rh-date { font-size: 13px; color: #888; }
+
+.date-tabs {
+  display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px;
+}
+.date-tabs::-webkit-scrollbar { display: none; }
+.date-tab {
+  flex-shrink: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 8px 14px; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.date-tab.active { background: var(--orange); border-color: var(--orange); }
+.date-tab span { display: block; font-size: 12px; color: var(--text3); }
+.date-tab strong { display: block; font-size: 14px; color: var(--text); }
+.date-tab.active span, .date-tab.active strong { color: #fff; }
+
+.filter-row {
+  display: flex; gap: 8px; margin-bottom: 12px;
+}
+.filter-chip {
+  background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px;
+  font-size: 12px; color: var(--text2); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.filter-chip.active { background: var(--orange-light); border-color: var(--orange); color: var(--orange); font-weight: 600; }
+
+.train-item {
+  background: #fff; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px;
+  box-shadow: var(--shadow); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;
+  text-decoration: none; display: block;
+}
+.train-item:hover { border-color: var(--orange); box-shadow: var(--shadow-lg); }
+.train-item.sold-out { opacity: 0.55; cursor: not-allowed; }
+
+.train-main { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.train-times { display: flex; align-items: baseline; gap: 6px; flex: 1; }
+.t-dep { font-size: 24px; font-weight: 800; color: var(--text); }
+.t-arr { font-size: 24px; font-weight: 800; color: var(--text); }
+.t-sep { color: var(--text3); font-size: 14px; }
+.train-meta { display: flex; align-items: center; gap: 8px; }
+.train-no { font-size: 12px; background: var(--gray-light); color: var(--text3); padding: 3px 8px; border-radius: 6px; }
+.train-dur { font-size: 12px; color: var(--text3); }
+
+.train-bottom { display: flex; align-items: center; justify-content: space-between; }
+.seat-badges { display: flex; gap: 6px; }
+.seat-badge {
+  font-size: 11px; padding: 4px 9px; border-radius: 6px; font-weight: 600;
+}
+.badge-ok { background: #e8f5ee; color: #00793b; }
+.badge-few { background: #fff4e0; color: #c07000; }
+.badge-no { background: #fdecea; color: #c62828; }
+.train-price { font-size: 18px; font-weight: 800; color: var(--orange); }
+.train-price small { font-size: 11px; font-weight: 400; color: var(--text3); }
+
+.section-label { font-size: 13px; color: var(--text3); padding: 4px 0 10px; font-weight: 600; }
+
+.no-trains { text-align: center; padding: 40px 20px; color: var(--text3); }
+.no-trains svg { width: 48px; height: 48px; margin: 0 auto 12px; display: block; stroke: #ccc; fill: none; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="island"></div>
+  <div class="topbar">
+    <div class="topbar-main">
+      <a class="topbar-back" href="booking.html">‹</a>
+      <div class="topbar-title">選擇班次</div>
+      <div class="brand" style="margin-left:auto"><span>T</span>EXpress</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="route-header">
+      <div class="rh-stations">
+        <div class="rh-city" id="rh-dep">高雄</div>
+        <div class="rh-arrow">→</div>
+        <div class="rh-city" id="rh-arr">台中</div>
+      </div>
+      <div class="rh-date">2026/03/09（一）</div>
+    </div>
+
+    <!-- Date tabs -->
+    <div class="date-tabs" id="date-tabs"></div>
+
+    <!-- Filters -->
+    <div class="filter-row">
+      <div class="filter-chip active" onclick="filterTime('all',this)">全部</div>
+      <div class="filter-chip" onclick="filterTime('morning',this)">上午</div>
+      <div class="filter-chip" onclick="filterTime('afternoon',this)">下午</div>
+      <div class="filter-chip" onclick="filterTime('evening',this)">晚間</div>
+    </div>
+
+    <div class="section-label">共 <span id="count">12</span> 班次</div>
+    <div id="train-list"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="my-ticket.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>我的車票</a>
+    <a href="booking.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>訂票</a>
+    <a href="payment.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>付款/取票</a>
+    <a href="free-seat.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 10H7M21 6H3M21 14H3M21 18H7"/></svg>載入定位</a>
+    <a href="other.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>其他</a>
+  </nav>
+</div>
+<script>
+const TRAINS = [
+  {no:'0808', dep:'09:00', arr:'09:43', dur:'43分', price:790, std:'充足', bus:'充足'},
+  {no:'0814', dep:'10:00', arr:'10:43', dur:'43分', price:790, std:'充足', bus:'少量'},
+  {no:'0820', dep:'11:00', arr:'11:49', dur:'49分', price:790, std:'少量', bus:'充足'},
+  {no:'0826', dep:'12:00', arr:'12:49', dur:'49分', price:790, std:'充足', bus:'充足'},
+  {no:'0832', dep:'13:00', arr:'13:43', dur:'43分', price:790, std:'少量', bus:'少量'},
+  {no:'0834', dep:'14:43', arr:'15:32', dur:'49分', price:790, std:'充足', bus:'充足'},
+  {no:'0838', dep:'15:00', arr:'15:49', dur:'49分', price:790, std:'售罄', bus:'售罄'},
+  {no:'0844', dep:'16:00', arr:'16:49', dur:'49分', price:790, std:'充足', bus:'充足'},
+  {no:'0850', dep:'17:00', arr:'17:49', dur:'49分', price:790, std:'少量', bus:'充足'},
+  {no:'0856', dep:'18:00', arr:'18:49', dur:'49分', price:790, std:'充足', bus:'充足'},
+  {no:'0862', dep:'19:00', arr:'19:43', dur:'43分', price:790, std:'充足', bus:'少量'},
+  {no:'0868', dep:'20:00', arr:'20:49', dur:'49分', price:790, std:'少量', bus:'充足'},
+];
+
+let currentFilter = 'all';
+
+function badgeClass(s){ return s==='充足'?'badge-ok':s==='少量'?'badge-few':'badge-no'; }
+
+function renderTrains(list){
+  const el = document.getElementById('train-list');
+  document.getElementById('count').textContent = list.length;
+  if(!list.length){
+    el.innerHTML = `<div class="no-trains"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2.5"/></svg>此時段無班次</div>`;
+    return;
+  }
+  el.innerHTML = list.map(t => {
+    const soldOut = t.std==='售罄' && t.bus==='售罄';
+    return `<a class="train-item${soldOut?' sold-out':''}" href="${soldOut?'#':'payment.html'}" onclick="${soldOut?'event.preventDefault();alert(\"此班次已售罄\")':''}">
+      <div class="train-main">
+        <div class="train-times">
+          <span class="t-dep">${t.dep}</span>
+          <span class="t-sep">→</span>
+          <span class="t-arr">${t.arr}</span>
+        </div>
+        <div class="train-meta">
+          <span class="train-no">${t.no}次</span>
+          <span class="train-dur">${t.dur}</span>
+        </div>
+      </div>
+      <div class="train-bottom">
+        <div class="seat-badges">
+          <span class="seat-badge ${badgeClass(t.std)}">標準 ${t.std}</span>
+          <span class="seat-badge ${badgeClass(t.bus)}">商務 ${t.bus}</span>
+        </div>
+        <div class="train-price">NT$${t.price}<small>/人</small></div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+function filterTime(t, el){
+  currentFilter = t;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  let list = TRAINS;
+  if(t==='morning') list = TRAINS.filter(x => parseInt(x.dep) < 12);
+  else if(t==='afternoon') list = TRAINS.filter(x => parseInt(x.dep) >= 12 && parseInt(x.dep) < 18);
+  else if(t==='evening') list = TRAINS.filter(x => parseInt(x.dep) >= 18);
+  renderTrains(list);
+}
+
+// Date tabs
+const dates = ['03/08','03/09','03/10','03/11','03/12'];
+const days = ['日','一','二','三','四'];
+const tabEl = document.getElementById('date-tabs');
+tabEl.innerHTML = dates.map((d,i)=>`
+  <div class="date-tab${i===1?' active':''}" onclick="document.querySelectorAll('.date-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">
+    <strong>${d}</strong><span>（${days[i]}）</span>
+  </div>`).join('');
+
+renderTrains(TRAINS);
+</script>
+</body>
+</html>
